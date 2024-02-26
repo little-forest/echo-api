@@ -5,13 +5,13 @@ on:
    branches:
      - 'main'
    paths:
-     - src/**
+     - *.go
      - .github/workflows/**
      - 'aqua.yaml'
 
  pull_request:
    paths:
-     - src/**
+     - *.go
      - .github/workflows/**
      - 'aqua.yaml'
 
@@ -41,7 +41,7 @@ jobs:
         run: >
           github-comment exec --token ${{ secrets.GITHUB_TOKEN }} --
           ../bin/golangci-lint run
-        working-directory: ./src
+        working-directory: ./
 
       - name: Hide old comment
         run: github-comment hide --token ${{ secrets.GITHUB_TOKEN }}
@@ -49,8 +49,8 @@ jobs:
 
       - name: Build 
         run: go build
-        working-directory: ./src
+        working-directory: ./
  
       - name: Test
         run: go test -v ./...
-        working-directory: ./src
+        working-directory: ./
