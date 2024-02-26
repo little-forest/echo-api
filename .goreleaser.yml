@@ -1,0 +1,70 @@
+project_name: echo-api
+env:
+  - GO111MODULE=on
+  - IMAGE_NAME=littlef/{{ .ProjectName }}
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - main: .
+    binary: echo-api
+    ldflags:
+      - -s -w
+      - -X github.com/little-forest/{{.ProjectName}}/main.version={{.Version}}
+      - -X github.com/little-forest/{{.ProjectName}}/main.revision={{.ShortCommit}}
+      - -X github.com/little-forest/{{.ProjectName}}/main.date={{.Date}}
+      - -X github.com/little-forest/{{.ProjectName}}/main.osArch={{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    mod_timestamp: '{{ .CommitTimestamp }}'
+archives:
+  - name_template: >-
+      {{- .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end -}}
+    format_overrides:
+      - goos: windows
+        format: zip
+release:
+  prerelease: auto
+
+dockers:
+  - use: buildx
+    goos: linux
+    goarch: amd64
+    image_templates:
+      - "{{ .Env.IMAGE_NAME }}:{{ .Version }}-amd64"
+    dockerfile: ./Dockerfile
+    build_flag_templates:
+      - "--platform=linux/amd64"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+  - use: buildx
+    goos: linux
+    goarch: arm64
+    image_templates:
+      - "{{ .Env.IMAGE_NAME }}:{{ .Version }}-arm64v8"
+    dockerfile: ./Dockerfile
+    build_flag_templates:
+      - "--platform=linux/arm64/v8"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+docker_manifests:
+  - name_template: "{{ .Env.IMAGE_NAME }}:{{ .Version }}"
+    image_templates:
+      - "{{ .Env.IMAGE_NAME }}:{{ .Version }}-amd64"
+      - "{{ .Env.IMAGE_NAME }}:{{ .Version }}-arm64v8"
