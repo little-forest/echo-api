@@ -31,7 +31,7 @@ jobs:
       - name: Run GoLangCI-Lint
         run: >
           github-comment exec --token ${{ secrets.GITHUB_TOKEN }} --
-          ../bin/golangci-lint run
+          ./bin/golangci-lint run
         working-directory: ./
 
       - name: Hide old comment
