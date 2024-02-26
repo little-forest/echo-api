@@ -4,16 +4,7 @@ on:
  push:
    branches:
      - 'main'
-   paths:
-     - *.go
-     - .github/workflows/**
-     - 'aqua.yaml'
-
  pull_request:
-   paths:
-     - *.go
-     - .github/workflows/**
-     - 'aqua.yaml'
 
 jobs:
   build_and_test:
