@@ -1,0 +1,28 @@
+version: 3
+
+set: [e, u, pipefail]
+
+tasks:
+  default:
+    desc: Print how to use `task` and command
+    cmd: task --list-all
+  setup:
+    desc: Setup this repository
+    cmds:
+      - aqua install
+  run:
+    desc: Run
+    cmd: go run .
+  lint:
+    desc: Lint
+    cmd: golangci-lint run
+  format:
+    desc: Format
+    cmd: golangci-lint fmt
+  test:
+    desc: Test
+    cmd: go test ./...
+  build:
+    desc: Build
+    cmd: goreleaser release --clean --snapshot
+
