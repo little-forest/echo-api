@@ -7,3 +7,4 @@ registries:
 
 packages:
 - name: suzuki-shunsuke/github-comment@v6.0.4
+- name: golangci/golangci-lint@v2.3.0

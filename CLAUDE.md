@@ -8,15 +8,37 @@ This is a simple Echo API server written in Go that serves as a debugging and in
 
 ### Core Components
 
-- **`server.go`**: Main server entry point with CLI argument parsing and Echo server setup
-- **`echo.go`**: Request handling logic with the `dumpRequest` function that extracts and returns request metadata
-- **`version.go`**: Version information display functionality (version info injected via LDFLAGS during build)
+- **`server.go`**: Main server entry point with CLI argument parsing and Echo server setup. Handles port configuration via flags (`-p`, `--port`) or `PORT` environment variable. Sets up Logger and Secure middlewares.
+- **`echo.go`**: Request handling logic with the `dumpRequest` function that extracts and returns request metadata as JSON. Includes `DumpResult` struct and `HttpHeader` helper type.
+- **`version.go`**: Version information display functionality with build-time variables injected via LDFLAGS during GoReleaser builds.
 
 The server accepts any GET request to any path (`/*` route) and returns detailed information about the request including headers, timestamp, hostname, and remote address.
 
 ## Development Commands
 
-### Building and Running
+Use Task runner for development workflow:
+
+```bash
+# Setup development environment
+task setup
+
+# Run locally (default port 8080)
+task run
+
+# Lint code
+task lint
+
+# Format code
+task format
+
+# Run tests
+task test
+
+# Build release artifacts
+task build
+```
+
+### Alternative Go Commands
 
 ```bash
 # Build for development (creates binary in current directory)
@@ -30,6 +52,9 @@ go run . -p 8081
 
 # Show version
 go run . -version
+
+# Run tests
+go test ./...
 ```
 
 ### Release Building
@@ -46,11 +71,8 @@ goreleaser release --clean --snapshot
 ### Docker
 
 ```bash
-# Build Docker image (handled by GoReleaser)
-docker build -t littlef/echo-api .
-
 # Run in Docker
-docker run --rm -p 8081:8081 littlef/echo-api:latest -p 8081
+docker run --rm -p 8081:8081 littlef/echo-api:0.0.1 -p 8081
 ```
 
 ## Configuration
@@ -59,21 +81,19 @@ docker run --rm -p 8081:8081 littlef/echo-api:latest -p 8081
 - **Application Name**: Set `X_APP_NAME` environment variable to add custom header to responses
 - **GoReleaser**: Uses `.goreleaser.yml` for multi-platform builds and Docker image creation
 
-## Dependencies
+## Tools and Dependencies
 
 - **Echo v4**: Web framework for HTTP server
-- **Aqua**: Tool version management (see `aqua.yaml`)
-- **Renovate**: Automated dependency updates (see `renovate.json`)
+- **Task**: Task runner for development workflow (see `Taskfile.yaml`)
+- **Aqua**: Tool version management - includes `golangci-lint` and `github-comment`
+- **GoReleaser**: Multi-platform builds and Docker image creation
+- **Renovate**: Automated dependency updates
 
-## Project Structure
+## Build Process
 
-```
-├── server.go          # Main server and CLI setup
-├── echo.go           # HTTP request handler
-├── version.go        # Version display
-├── Dockerfile        # Distroless container image
-├── .goreleaser.yml   # Release build configuration
-└── aqua.yaml        # Tool version management
-```
+Version information is injected at build time via LDFLAGS in GoReleaser configuration:
+- `version`, `revision`, `date`, `osArch` variables in `version.go`
+- Cross-platform builds for linux/darwin/windows on amd64/arm64
+- Docker multi-arch manifests for linux/amd64 and linux/arm64
 
 The codebase is intentionally minimal with no test files - this is a utility application focused on request debugging rather than complex business logic.
