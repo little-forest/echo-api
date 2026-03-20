@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/labstack/echo/v4"
+	echo "github.com/labstack/echo/v5"
 )
 
 type HttpHeader struct {
@@ -28,7 +28,7 @@ type DumpResult struct {
 	Headers    map[string]string `json:"headers"`
 }
 
-func dumpRequest(c echo.Context) error {
+func dumpRequest(c *echo.Context) error {
 	r := &DumpResult{}
 
 	r.Path = c.Request().RequestURI
