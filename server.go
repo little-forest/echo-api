@@ -3,11 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
+	"log/slog"
 	"os"
 	"strconv"
 
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	echo "github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v5/middleware"
 )
 
 const defaultPort = 8080
@@ -51,8 +53,8 @@ func main() {
 		LogStatus:   true,
 		LogLatency:  true,
 		LogRemoteIP: true,
-		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
-			e.Logger.Infof("%s %s %d %s %s", v.RemoteIP, v.Method, v.Status, v.URI, v.Latency)
+		LogValuesFunc: func(c *echo.Context, v middleware.RequestLoggerValues) error {
+			slog.Info("request", "remoteIP", v.RemoteIP, "method", v.Method, "status", v.Status, "uri", v.URI, "latency", v.Latency)
 			return nil
 		},
 	}))
@@ -60,5 +62,7 @@ func main() {
 
 	e.GET("/*", dumpRequest)
 
-	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", port)))
+	if err := e.Start(fmt.Sprintf(":%d", port)); err != nil {
+		log.Fatal(err)
+	}
 }
