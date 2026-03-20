@@ -45,7 +45,17 @@ func main() {
 	e := echo.New()
 
 	// Setup middlewares
-	e.Use(middleware.Logger())
+	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
+		LogMethod:   true,
+		LogURI:      true,
+		LogStatus:   true,
+		LogLatency:  true,
+		LogRemoteIP: true,
+		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
+			e.Logger.Infof("%s %s %d %s %s", v.RemoteIP, v.Method, v.Status, v.URI, v.Latency)
+			return nil
+		},
+	}))
 	e.Use(middleware.Secure())
 
 	e.GET("/*", dumpRequest)
