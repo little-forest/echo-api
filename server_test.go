@@ -27,8 +27,8 @@ func assertSecurityHeaders(t *testing.T, rec *httptest.ResponseRecorder) {
 	if got := h.Get("X-Frame-Options"); got != "SAMEORIGIN" {
 		t.Errorf("X-Frame-Options = %q, want %q", got, "SAMEORIGIN")
 	}
-	if got := h.Get("X-Xss-Protection"); got != "1; mode=block" {
-		t.Errorf("X-Xss-Protection = %q, want %q", got, "1; mode=block")
+	if got, ok := h["X-Xss-Protection"]; ok {
+		t.Errorf("X-Xss-Protection = %q, want none", got)
 	}
 }
 

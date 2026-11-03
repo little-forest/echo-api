@@ -2,7 +2,7 @@
 title: Web フレームワーク echo への依存を外し、Go 標準ライブラリだけで動かす
 created: 2026-11-03
 updated: 2026-11-03
-status: 実装中
+status: 実装済み
 ---
 
 # 要求

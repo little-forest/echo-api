@@ -1,11 +1,11 @@
 package main
 
 import (
+	"encoding/json"
+	"log/slog"
 	"net/http"
 	"os"
 	"time"
-
-	echo "github.com/labstack/echo/v5"
 )
 
 type HttpHeader struct {
@@ -28,16 +28,16 @@ type DumpResult struct {
 	Headers    map[string]string `json:"headers"`
 }
 
-func dumpRequest(c *echo.Context) error {
+func dumpRequest(w http.ResponseWriter, req *http.Request) {
 	r := &DumpResult{}
 
-	r.Path = c.Request().RequestURI
+	r.Path = req.RequestURI
 	r.Hostname, _ = os.Hostname()
 	r.Time = time.Now().Format(time.RFC3339Nano)
-	r.RemoteAddr = c.Request().RemoteAddr
+	r.RemoteAddr = req.RemoteAddr
 	r.Headers = make(map[string]string)
 
-	for name, values := range c.Request().Header {
+	for name, values := range req.Header {
 		for _, v := range values {
 			r.Headers[name] = v
 		}
@@ -47,5 +47,15 @@ func dumpRequest(c *echo.Context) error {
 		r.Headers["X-Application-Name"] = appName
 	}
 
-	return c.JSON(http.StatusOK, r)
+	writeJSON(w, http.StatusOK, r)
+}
+
+// writeJSON writes v in the same form as echo's default JSON serializer
+// (no charset, HTML escaped, trailing newline).
+func writeJSON(w http.ResponseWriter, status int, v any) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	if err := json.NewEncoder(w).Encode(v); err != nil {
+		slog.Error("failed to write response", "error", err)
+	}
 }
