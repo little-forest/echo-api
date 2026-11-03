@@ -9,7 +9,7 @@ This is a simple Echo API server written in Go that serves as a debugging and in
 ### Core Components
 
 - **`server.go`**: Main server entry point with CLI argument parsing and `net/http` server setup. Handles port configuration via flags (`-p`, `--port`) or `PORT` environment variable. `newHandler()` assembles the whole app from a single method-dispatching handler (no `http.ServeMux`, so paths are never cleaned or redirected), a security-header middleware, and an access-log middleware (`log/slog`). Shuts down gracefully on SIGINT/SIGTERM.
-- **`echo.go`**: Request handling logic with the `dumpRequest` `http.HandlerFunc` that extracts and returns request metadata as JSON. Includes `DumpResult` struct and `HttpHeader` helper type. ("echo" here means the echo server, not a framework.)
+- **`echo.go`**: Request handling logic with the `dumpRequest` `http.HandlerFunc` that extracts and returns request metadata as JSON. Includes `DumpResult` struct. ("echo" here means the echo server, not a framework.)
 - **`version.go`**: Version information display functionality with build-time variables injected via LDFLAGS during GoReleaser builds.
 
 The server accepts any GET request to any path (`/*` route) and returns detailed information about the request including headers, timestamp, hostname, and remote address.

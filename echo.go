@@ -8,18 +8,6 @@ import (
 	"time"
 )
 
-type HttpHeader struct {
-	Name  string
-	Value string
-}
-
-func NewHttpHeader(name string, value string) *HttpHeader {
-	h := &HttpHeader{
-		Name:  name,
-		Value: value}
-	return h
-}
-
 type DumpResult struct {
 	Path       string            `json:"path"`
 	Time       string            `json:"time"`
