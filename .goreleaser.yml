@@ -34,37 +34,20 @@ archives:
       {{- if .Arm }}v{{ .Arm }}{{ end -}}
     format_overrides:
       - goos: windows
-        format: zip
+        formats: [zip]
 release:
   prerelease: auto
 
-dockers:
-  - use: buildx
-    goos: linux
-    goarch: amd64
-    image_templates:
-      - "{{ .Env.IMAGE_NAME }}:{{ .Version }}-amd64"
-    dockerfile: ./Dockerfile
-    build_flag_templates:
-      - "--platform=linux/amd64"
-      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
-      - "--label=org.opencontainers.image.created={{ .Date }}"
-      - "--label=org.opencontainers.image.version={{ .Version }}"
-      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
-  - use: buildx
-    goos: linux
-    goarch: arm64
-    image_templates:
-      - "{{ .Env.IMAGE_NAME }}:{{ .Version }}-arm64v8"
-    dockerfile: ./Dockerfile
-    build_flag_templates:
-      - "--platform=linux/arm64/v8"
-      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
-      - "--label=org.opencontainers.image.created={{ .Date }}"
-      - "--label=org.opencontainers.image.version={{ .Version }}"
-      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
-docker_manifests:
-  - name_template: "{{ .Env.IMAGE_NAME }}:{{ .Version }}"
-    image_templates:
-      - "{{ .Env.IMAGE_NAME }}:{{ .Version }}-amd64"
-      - "{{ .Env.IMAGE_NAME }}:{{ .Version }}-arm64v8"
+dockers_v2:
+  - images:
+      - "{{ .Env.IMAGE_NAME }}"
+    tags:
+      - "{{ .Version }}"
+    platforms:
+      - linux/amd64
+      - linux/arm64
+    labels:
+      "org.opencontainers.image.title": "{{ .ProjectName }}"
+      "org.opencontainers.image.created": "{{ .Date }}"
+      "org.opencontainers.image.version": "{{ .Version }}"
+      "org.opencontainers.image.revision": "{{ .FullCommit }}"
