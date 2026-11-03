@@ -44,6 +44,16 @@ func main() {
 
 	port := getPortNumber()
 
+	e := newHandler()
+
+	if err := e.Start(fmt.Sprintf(":%d", port)); err != nil {
+		log.Fatal(err)
+	}
+}
+
+// newHandler returns the whole application including middlewares.
+// It is also used from tests.
+func newHandler() *echo.Echo {
 	e := echo.New()
 
 	// Setup middlewares
@@ -62,7 +72,5 @@ func main() {
 
 	e.GET("/*", dumpRequest)
 
-	if err := e.Start(fmt.Sprintf(":%d", port)); err != nil {
-		log.Fatal(err)
-	}
+	return e
 }
