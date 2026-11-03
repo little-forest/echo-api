@@ -22,3 +22,6 @@ go.work
 
 # Binary output directry created by goreleaser
 /dist
+
+# Binary built by `go build -o echo-api .`
+/echo-api
