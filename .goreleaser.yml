@@ -10,10 +10,10 @@ builds:
     binary: echo-api
     ldflags:
       - -s -w
-      - -X github.com/little-forest/{{.ProjectName}}/main.version={{.Version}}
-      - -X github.com/little-forest/{{.ProjectName}}/main.revision={{.ShortCommit}}
-      - -X github.com/little-forest/{{.ProjectName}}/main.date={{.Date}}
-      - -X github.com/little-forest/{{.ProjectName}}/main.osArch={{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}
+      - -X main.version={{.Version}}
+      - -X main.revision={{.ShortCommit}}
+      - -X main.date={{.Date}}
+      - -X main.osArch={{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}
     env:
       - CGO_ENABLED=0
     goos:
