@@ -14,6 +14,12 @@
       "matchDepNames": ["go"],
       "matchDepTypes": ["golang"],
       "rangeStrategy": "bump"
+    },
+    {
+      "description": "Pin and update the digest of the distroless base image in Dockerfile",
+      "matchManagers": ["dockerfile"],
+      "matchPackageNames": ["gcr.io/distroless/static-debian13"],
+      "pinDigests": true
     }
   ]
 }
