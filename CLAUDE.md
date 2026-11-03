@@ -72,7 +72,7 @@ goreleaser release --clean --snapshot
 
 ```bash
 # Run in Docker
-docker run --rm -p 8081:8081 littlef/echo-api:0.0.1 -p 8081
+docker run --rm -p 8081:8081 littlef/echo-api:1.0.0 -p 8081
 ```
 
 ## Configuration
