@@ -8,8 +8,8 @@ This is a simple Echo API server written in Go that serves as a debugging and in
 
 ### Core Components
 
-- **`server.go`**: Main server entry point with CLI argument parsing and Echo server setup. Handles port configuration via flags (`-p`, `--port`) or `PORT` environment variable. Sets up Logger and Secure middlewares.
-- **`echo.go`**: Request handling logic with the `dumpRequest` function that extracts and returns request metadata as JSON. Includes `DumpResult` struct and `HttpHeader` helper type.
+- **`server.go`**: Main server entry point with CLI argument parsing and `net/http` server setup. Handles port configuration via flags (`-p`, `--port`) or `PORT` environment variable. `newHandler()` assembles the whole app from a single method-dispatching handler (no `http.ServeMux`, so paths are never cleaned or redirected), a security-header middleware, and an access-log middleware (`log/slog`). Shuts down gracefully on SIGINT/SIGTERM.
+- **`echo.go`**: Request handling logic with the `dumpRequest` `http.HandlerFunc` that extracts and returns request metadata as JSON. Includes `DumpResult` struct. ("echo" here means the echo server, not a framework.)
 - **`version.go`**: Version information display functionality with build-time variables injected via LDFLAGS during GoReleaser builds.
 
 The server accepts any GET request to any path (`/*` route) and returns detailed information about the request including headers, timestamp, hostname, and remote address.
@@ -78,12 +78,12 @@ docker run --rm -p 8081:8081 littlef/echo-api:0.0.1 -p 8081
 ## Configuration
 
 - **Port**: Set via `-p` flag, `--port` flag, or `PORT` environment variable (default: 8080)
-- **Application Name**: Set `X_APP_NAME` environment variable to add custom header to responses
+- **Application Name**: Set `X_APP_NAME` environment variable to add an `X-Application-Name` entry to the `headers` field of the JSON response (it is not sent as a response header)
 - **GoReleaser**: Uses `.goreleaser.yml` for multi-platform builds and Docker image creation
 
 ## Tools and Dependencies
 
-- **Echo v4**: Web framework for HTTP server
+- **Go standard library only**: No external module dependencies (`net/http`, `log/slog`, `encoding/json`)
 - **Task**: Task runner for development workflow (see `Taskfile.yaml`)
 - **Aqua**: Tool version management - includes `golangci-lint` and `github-comment`
 - **GoReleaser**: Multi-platform builds and Docker image creation
@@ -96,4 +96,4 @@ Version information is injected at build time via LDFLAGS in GoReleaser configur
 - Cross-platform builds for linux/darwin/windows on amd64/arm64
 - Docker multi-arch manifests for linux/amd64 and linux/arm64
 
-The codebase is intentionally minimal with no test files - this is a utility application focused on request debugging rather than complex business logic.
+The codebase is intentionally minimal - this is a utility application focused on request debugging rather than complex business logic. `server_test.go` pins the HTTP contract with `net/http/httptest`: the JSON shape of GET responses, 204 for OPTIONS, 405 for HEAD and other methods (with `Allow` and body), and the security headers. Since the app exists to observe requests, any change in these responses is a breaking change for users.
